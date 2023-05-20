@@ -10,3 +10,6 @@ cache
 artifacts
 
 out
+
+client/node_modules
+client/.next

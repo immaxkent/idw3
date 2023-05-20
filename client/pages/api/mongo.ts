@@ -1,5 +1,5 @@
 import { NextApiResponse, NextApiRequest } from "next";
-import { closeClient, returnAccountsDb } from "../../lib/mongodb";
+import { returnAccountsDb } from "../../lib/mongodb";
 
 export default async function handler(
   request: NextApiRequest,

@@ -8,4 +8,8 @@ contract Idw3Bridge {
     function executeSwap(address _to) public payable {
         //integrate 1-INCH on chain part here, including taking a cut (~0.1%)
     }
+
+    function makePayment(address _to) public payable {
+        
+    }
 }

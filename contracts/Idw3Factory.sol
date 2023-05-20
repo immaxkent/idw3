@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-//import "hardhat/console.sol";
-// import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Idw3.sol";
 import "sismo-connect-solidity/SismoLib.sol";
 import "chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
-
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "./Idw3.sol";
 
 contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     struct kycRequest {
@@ -57,7 +54,7 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
         // --> vaultId = hash(userVaultSecret, appId)
         uint256 vaultId = SismoConnectHelper.getUserId(result, AuthType.VAULT);
 
-        mintIDW(vaultId, msg.sender, _typeOfId);
+        mintIDW(vaultId, msg.sender, _typeOfId); // Demo
 
         // Chainlink API
         // bytes32 requestId = requestKYC();
@@ -109,9 +106,12 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
         address userAddress,
         uint8 typeId
     ) internal {
-        address newIdw3 = address(new Idw3(vaultId, typeId));
-        idw3Owners[userAddress] = true;
-        idw3s[userAddress] = newIdw3;
+        if (!minted[vaultId]) {
+            address newIdw3 = address(new Idw3(vaultId, typeId));
+            idw3Owners[userAddress] = true;
+            idw3s[userAddress] = newIdw3;
+            minted[vaultId] = true;
+        }
     }
 
     function evaluateIfUserHasIdw3() external view returns (bool) {

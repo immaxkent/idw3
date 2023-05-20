@@ -1,13 +1,11 @@
-# Sample Hardhat Project
+# idw3 
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+front end, back end and blockchain architectures for the idw3 PoS web2/3 portal.
 
-Try running some of the following tasks:
+# open source edition
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+open source edition does not include KYC, SalesMaster or Railgun shielder
+
+# premium perky
+
+premium perky includes KYC, SalesMaster, Railgun 

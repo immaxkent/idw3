@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   const accounts = await returnAccountsDb();
 
-  console.log("Receiving request to mongo api");
+  console.log("Receiving request to mongo api", Date.now());
   console.log("body", request.body);
   console.log("query", request.query);
 
@@ -21,7 +21,7 @@ export default async function handler(
         if (foundUser) {
           return response.status(200).json(true);
         } else {
-          return response.status(400).send("Sismo ID not found");
+          return response.status(400).send("Sismo ID not found in DataBase");
         }
 
       case "POST":
@@ -31,10 +31,14 @@ export default async function handler(
         return response.status(200).json({ user: userToAdd, success: true });
 
       case "PUT":
-        console.log("Adding data to a user");
         const userToUpdate = request.body;
-        const putFilter = { email: userToUpdate.email };
+        console.log("Adding more data to a user", userToUpdate);
 
+        if (!userToUpdate.sismoId) {
+          return response.status(400).send("No sismo ID sent in request");
+        }
+
+        const putFilter = { sismoId: userToUpdate.sismoId };
         // create a document that sets the plot of the movie
         const putUpdateDoc = {
           $set: {
@@ -47,16 +51,22 @@ export default async function handler(
 
       case "PATCH":
         const userToPatch = request.body;
-        const patchFilter = { email: userToPatch.email };
+        console.log("patching with user", request.body);
+
+        const patchFilter = { sismoId: userToPatch.sismoId };
+
+        if (!userToPatch.sismoId) {
+          return response.status(400).send("No sismo ID sent in request");
+        }
 
         // create a document that sets the plot of the movie
         const patchUpdateDoc = {
-          $set: {
-            userToPatch,
-          },
+          ...userToPatch,
         };
 
-        await accounts.updateOne(patchFilter, patchUpdateDoc, { upsert: true });
+        await accounts.replaceOne(patchFilter, patchUpdateDoc, {
+          upsert: true,
+        });
         return response.status(200).json({ user: userToUpdate, success: true });
     }
   } catch (error) {

@@ -25,6 +25,5 @@ contract Idw3 {
     }
 
     fallback() external payable {}
-
     receive() external payable {}
 }

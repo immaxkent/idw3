@@ -1,9 +1,9 @@
-import { useState } from "react";
 import Header from "../components/Header";
 import LandingContent from "../components/LandingContent";
-import RootLayout from "../components/layout";
+import RootLayout from "../components/Atoms/layout";
 import styled from "styled-components";
 import SignUp from "../components/SignUp";
+import { useRouter } from "next/router";
 
 const PageContainer = styled.div`
   width: 100vw;
@@ -22,21 +22,24 @@ const ContentContainer = styled.div`
   background: rgba(61, 114, 56, 0.5);
   width: 80%;
   max-width: 1164px;
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export default function Home({}) {
-  const [signingUp, setSigningUp] = useState<boolean>(false);
+  const router = useRouter();
+  const {
+    query: { step },
+  } = router;
 
   return (
     <RootLayout>
       <PageContainer>
         <Header />
         <ContentContainer>
-          {!signingUp ? (
-            <LandingContent onSignUp={() => setSigningUp(true)} />
-          ) : (
-            <SignUp />
-          )}
+          {!step ? <LandingContent /> : <SignUp />}
         </ContentContainer>
       </PageContainer>
     </RootLayout>

@@ -1,4 +1,6 @@
+import { useRouter } from "next/router";
 import styled from "styled-components";
+import Button from "./Atoms/Button";
 
 const Container = styled.div`
   width: 100%;
@@ -31,34 +33,40 @@ const ButtonContainer = styled.div`
   padding-top: 16px;
 `;
 
-const Button = styled.button`
-  background: #d9d9d9;
-  border-radius: 24px;
-  height: 64px;
-  width: 224px;
-  text-transform: uppercase;
-  font-size: 18px;
-  letter-spacing: 0.15em;
-  font-weight: 600px;
-`;
+const LandingContent = () => {
+  const router = useRouter();
+  const { pathname, query } = router;
 
-const LandingContent = ({ onSignUp }: { onSignUp: () => void }) => (
-  <Container>
-    <div>
-      <Image src="/assets/BTC.png" />
-    </div>
-    <MainContent>
-      <p>
-        Decentralised <br /> B2C <br /> sales portal.
-      </p>
-      <ButtonContainer>
-        <Button onClick={onSignUp}>Sign up</Button>
-      </ButtonContainer>
-    </MainContent>
-    <div>
-      <Image src="/assets/Data.png" />
-    </div>
-  </Container>
-);
+  return (
+    <Container>
+      <div>
+        <Image src="/assets/BTC.png" />
+      </div>
+      <MainContent>
+        <p>
+          Decentralised <br /> B2C <br /> sales portal.
+        </p>
+        <ButtonContainer>
+          <Button
+            onClick={() =>
+              router.push({
+                pathname,
+                query: {
+                  ...query,
+                  step: "sismo",
+                },
+              })
+            }
+          >
+            Sign up
+          </Button>
+        </ButtonContainer>
+      </MainContent>
+      <div>
+        <Image src="/assets/Data.png" />
+      </div>
+    </Container>
+  );
+};
 
 export default LandingContent;

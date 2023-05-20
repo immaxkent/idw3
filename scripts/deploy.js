@@ -1,18 +1,7 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
+//for the sake of production, we needn't include the deploy script for idw3 as these are instatiated post successful KYC etc
 const hre = require("hardhat");
 
 async function main() {
-  // Deploy Idw3
-  const Idw3 = await ethers.getContractFactory("Idw3");
-  console.log("Deploying Idw3...");
-  const idw3 = await Idw3.deploy(12345, "proprieter");
-  await idw3.deployed();
-  console.log("Idw3 deployed to:", idw3.address);
 
   // Deploy Idw3Factory
   const Idw3Factory = await ethers.getContractFactory("Idw3Factory");

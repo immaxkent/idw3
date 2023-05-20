@@ -13,3 +13,6 @@ out
 # Client files
 **client/node_modules/**
 **client/.next/**
+
+client/abi-typechain
+src/types

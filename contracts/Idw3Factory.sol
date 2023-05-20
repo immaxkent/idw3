@@ -19,6 +19,7 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     mapping(address => address) public idw3s;
     mapping(uint => bool) public minted;
     mapping(bytes32 => kycRequest) public requestIdToVaultId;
+    mapping(string => bool) walletIdw3;
     bytes32 private jobId;
     uint256 private fee;
 

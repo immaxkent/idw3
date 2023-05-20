@@ -93,8 +93,8 @@
       }
     },
     "contracts/Idw3Factory.sol": {
-      "lastModificationDate": 1684603105634,
-      "contentHash": "ce4f70d8b8c1336edf8ca2b15871dba4",
+      "lastModificationDate": 1684608328540,
+      "contentHash": "37155de5a4c618f3a3555038f814a321",
       "sourceName": "contracts/Idw3Factory.sol",
       "solcConfig": {
         "settings": {

@@ -5,9 +5,9 @@ import { useRouter } from "next/router";
 
 const ProprietorKYC = () => {
   const router = useRouter();
-  const {
-    query: { sismoId },
-  } = router;
+  const { pathname, query } = router;
+
+  const { sismoId } = query;
 
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
@@ -34,6 +34,14 @@ const ProprietorKYC = () => {
       if (response.ok) {
         // Handle the successful API response
         console.log("Form submitted successfully!");
+
+        router.push({
+          pathname,
+          query: {
+            ...query,
+            step: "railgun",
+          },
+        });
       } else {
         // Handle errors from the API response
         console.error("Failed to submit form");

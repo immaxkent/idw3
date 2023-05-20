@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import UserTypeSelection from "./UserTypeSelection";
 import KYCSignUp from "./KYCSignUp";
+import Railgun from "./Railgun";
 
 const SignUp = () => {
   const { query } = useRouter();
@@ -14,6 +15,8 @@ const SignUp = () => {
       return <UserTypeSelection />;
     case "kyc":
       return <KYCSignUp />;
+    case "railgun":
+      return <Railgun />;
   }
 };
 

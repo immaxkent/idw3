@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "dev:client": "cd client && next dev",
+    "start:client": "cd client && next start"
   },
   "author": "XaEk",
   "license": "MIT",

@@ -9,10 +9,17 @@ import "chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 
 contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
+    struct kycRequest {
+        uint256 vaultId;
+        address userAddress;
+        uint8 typeId;
+    }
     using Chainlink for Chainlink.Request;
     address[] public deployedIdw3s;
     mapping(address => bool) public idw3Owners;
     mapping(address => address) public idw3s;
+    mapping(uint => bool) public minted;
+    mapping(bytes32 => kycRequest) public requestIdToVaultId;
     bytes32 private jobId;
     uint256 private fee;
 
@@ -28,8 +35,8 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
 
     function createIdw3(
         bytes calldata sismoConnectResponse,
-        string calldata _typeOfId
-    ) public payable {
+        uint8 _typeOfId
+    ) public payable returns (bytes32 requestId) {
         SismoConnectVerifiedResult memory result = verify({
             responseBytes: sismoConnectResponse,
             // we want users to prove that they own a Sismo Vault
@@ -41,26 +48,29 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
             // signature: buildSignature({message: abi.encode(msg.sender)})
         });
 
-        // check on oracalize if the vault id is KYCed
-        // Chainlink API
-
         // if the proofs and signed message are valid, we can take the userId from the verified result
         // in this case the userId is the vaultId (since we used AuthType.VAULT in the auth request)
         // it is the anonymous identifier of a user's vault for a specific app
         // --> vaultId = hash(userVaultSecret, appId)
         uint256 vaultId = SismoConnectHelper.getUserId(result, AuthType.VAULT);
 
-        // Mint the IDW3 account
-        address newIdw3 = address(new Idw3(vaultId, _typeOfId));
-        idw3Owners[msg.sender] = true;
-        idw3s[msg.sender] = newIdw3;
+        mintIDW(vaultId, msg.sender, _typeOfId);
+
+        // Chainlink API
+        // bytes32 requestId = requestKYC();
+        // requestIdToVaultId[requestId] = kycRequest({
+        //     vaultId: vaultId,
+        //     userAddress: msg.sender,
+        //     typeId: _typeOfId
+        // });
+        return requestKYC();
     }
 
     /**
      * Create a Chainlink request to retrieve API response, find the target
      * data, then multiply by 1000000000000000000 (to remove decimal places from data).
      */
-    function requestVolumeData() public returns (bytes32 requestId) {
+    function requestKYC() internal returns (bytes32 requestId) {
         Chainlink.Request memory req = buildChainlinkRequest(
             jobId,
             address(this),
@@ -68,26 +78,9 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
         );
 
         // Set the URL to perform the GET request on
-        // req.add("get", "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD");
         req.add("get", "https://thin-lamps-judge.loca.lt/api/mongo");
-
-        // Set the path to find the desired data in the API response, where the response format is:
-        // {"RAW":
-        //   {"ETH":
-        //    {"USD":
-        //     {
-        //      "VOLUME24HOUR": xxx.xxx,
-        //     }
-        //    }
-        //   }
-        //  }
-        // request.add("path", "RAW.ETH.USD.VOLUME24HOUR"); // Chainlink nodes prior to 1.0.0 support this format
         req.add("sismoId", "123"); // Chainlink nodes 1.0.0 and later support this format
 
-        // Multiply the result by 1000000000000000000 to remove decimals
-        // int256 timesAmount = 10 ** 18;
-        // req.addInt("times", timesAmount);
-        // console.log("Request sent");
         // Sends the request
         return sendChainlinkRequest(req, fee);
     }
@@ -96,10 +89,26 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
         bytes32 _requestId,
         bool _volume
     ) public recordChainlinkFulfillment(_requestId) {
-        emit RequestVolume(_requestId, _volume);
-        // volume = _volume;
-        // console.log("Request received");
-        // console.log(_volume);
+        if (_volume) {
+            kycRequest memory _kycRequest = requestIdToVaultId[_requestId];
+            // Mint the IDW3 account
+            mintIDW(
+                _kycRequest.vaultId,
+                _kycRequest.userAddress,
+                _kycRequest.typeId
+            );
+            emit RequestVolume(_requestId, _volume);
+        }
+    }
+
+    function mintIDW(
+        uint256 vaultId,
+        address userAddress,
+        uint8 typeId
+    ) internal {
+        address newIdw3 = address(new Idw3(vaultId, typeId));
+        idw3Owners[userAddress] = true;
+        idw3s[userAddress] = newIdw3;
     }
 
     function evaluateIfUserHasIdw3() public view returns (bool) {

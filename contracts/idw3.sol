@@ -7,10 +7,10 @@ pragma solidity ^0.8.9;
 contract Idw3 {
     uint256 public vaultId;
     bool pseudoSwitch; // is this the correct place to implement this?
-    string typeOfId;
+    uint8 typeOfId;
     uint256[] public superSet;
 
-    constructor(uint256 _vaultId, string memory _typeOfId) {
+    constructor(uint256 _vaultId, uint8 _typeOfId) {
         vaultId = _vaultId;
         typeOfId = _typeOfId;
         pseudoSwitch = false;

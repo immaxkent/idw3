@@ -7,26 +7,25 @@
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  // Deploy Contract1
+  const Idw3 = await ethers.getContractFactory("Idw3");
+  console.log("Deploying Idw3...");
+  const idw3 = await Idw3.deploy();
+  await idw3.deployed();
+  console.log("Idw3 deployed to:", idw3.address);
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.001");
-
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+  // Deploy Contract2
+  const Idw3Factory = await ethers.getContractFactory("Idw3Factory");
+  console.log("Deploying Idw3Factory...");
+  const idw3Factory = await Idw3Factory.deploy();
+  await idw3Factory.deployed();
+  console.log("Idw3Factory deployed to:", idw3Factory.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+// Execute the deployment script
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

@@ -10,5 +10,6 @@ cache
 
 out
 
-client/node_modules
-client/.next
+# Client files
+**client/node_modules/**
+**client/.next/**

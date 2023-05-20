@@ -14,14 +14,14 @@ export default async function handler(
   try {
     switch (request.method) {
       case "GET":
-        const { email } = request.query;
-        console.log("Getting an account", email);
-        const foundUser = await accounts.findOne({ email });
+        const { sismoId } = request.query;
+        console.log("Getting an account with sismoid", sismoId);
+        const foundUser = await accounts.findOne({ sismoId });
 
         if (foundUser) {
-          return response.status(200).json({ user: foundUser, success: true });
+          return response.status(200).json(true);
         } else {
-          return response.status(400).send("User ID not found");
+          return response.status(400).send("Sismo ID not found");
         }
 
       case "POST":

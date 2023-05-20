@@ -8,6 +8,8 @@ import "sismo-connect-solidity/SismoLib.sol";
 import "chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 
+import "@openzeppelin/contracts/utils/Strings.sol";
+
 contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     struct kycRequest {
         uint256 vaultId;
@@ -36,7 +38,8 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     function createIdw3(
         bytes calldata sismoConnectResponse,
         uint8 _typeOfId
-    ) public payable returns (bytes32 requestId) {
+    ) external payable {
+        //returns (bytes32 requestId) {
         SismoConnectVerifiedResult memory result = verify({
             responseBytes: sismoConnectResponse,
             // we want users to prove that they own a Sismo Vault
@@ -63,14 +66,13 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
         //     userAddress: msg.sender,
         //     typeId: _typeOfId
         // });
-        return requestKYC();
+        // return requestKYC(vaultId);
     }
 
     /**
-     * Create a Chainlink request to retrieve API response, find the target
-     * data, then multiply by 1000000000000000000 (to remove decimal places from data).
+     * Create a Chainlink request to retrieve API response
      */
-    function requestKYC() internal returns (bytes32 requestId) {
+    function requestKYC(uint vaultId) internal returns (bytes32 requestId) {
         Chainlink.Request memory req = buildChainlinkRequest(
             jobId,
             address(this),
@@ -79,7 +81,7 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
 
         // Set the URL to perform the GET request on
         req.add("get", "https://thin-lamps-judge.loca.lt/api/mongo");
-        req.add("sismoId", "123"); // Chainlink nodes 1.0.0 and later support this format
+        req.add("sismoId", Strings.toString(vaultId)); // Chainlink nodes 1.0.0 and later support this format
 
         // Sends the request
         return sendChainlinkRequest(req, fee);
@@ -88,7 +90,8 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     function fulfill(
         bytes32 _requestId,
         bool _volume
-    ) public recordChainlinkFulfillment(_requestId) {
+    ) external recordChainlinkFulfillment(_requestId) {
+        //TODO: check if this is from the operator only
         if (_volume) {
             kycRequest memory _kycRequest = requestIdToVaultId[_requestId];
             // Mint the IDW3 account
@@ -111,7 +114,7 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
         idw3s[userAddress] = newIdw3;
     }
 
-    function evaluateIfUserHasIdw3() public view returns (bool) {
+    function evaluateIfUserHasIdw3() external view returns (bool) {
         if (idw3Owners[msg.sender] == true) {
             return true;
         } else {

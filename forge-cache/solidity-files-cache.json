@@ -53,8 +53,8 @@
       }
     },
     "contracts/Idw3Bridge.sol": {
-      "lastModificationDate": 1684601259003,
-      "contentHash": "efcbf55f61abc153f751e88184c589d4",
+      "lastModificationDate": 1684602907264,
+      "contentHash": "11e0e7503023e4558cee5ef359fd0395",
       "sourceName": "contracts/Idw3Bridge.sol",
       "solcConfig": {
         "settings": {
@@ -93,8 +93,8 @@
       }
     },
     "contracts/Idw3Factory.sol": {
-      "lastModificationDate": 1684602695368,
-      "contentHash": "beecc4ad6c00299986f438ea5f1e2926",
+      "lastModificationDate": 1684603105634,
+      "contentHash": "ce4f70d8b8c1336edf8ca2b15871dba4",
       "sourceName": "contracts/Idw3Factory.sol",
       "solcConfig": {
         "settings": {
@@ -150,7 +150,9 @@
         "lib/sismo-connect-packages/packages/sismo-connect-solidity/lib/sismo-connect-onchain-verifier/src/libs/utils/Structs.sol",
         "lib/sismo-connect-packages/packages/sismo-connect-solidity/lib/sismo-connect-onchain-verifier/src/periphery/interfaces/IAddressesProvider.sol",
         "lib/sismo-connect-packages/packages/sismo-connect-solidity/lib/sismo-connect-onchain-verifier/src/verifiers/IHydraS2Verifier.sol",
-        "lib/sismo-connect-packages/packages/sismo-connect-solidity/src/SismoLib.sol"
+        "lib/sismo-connect-packages/packages/sismo-connect-solidity/src/SismoLib.sol",
+        "node_modules/@openzeppelin/contracts/utils/Strings.sol",
+        "node_modules/@openzeppelin/contracts/utils/math/Math.sol"
       ],
       "versionRequirement": "^0.8.9",
       "artifacts": {
@@ -1214,6 +1216,88 @@
       "artifacts": {
         "SismoLib": {
           "0.8.19+commit.7dd6d404.Darwin.appleclang": "SismoLib.sol/SismoLib.json"
+        }
+      }
+    },
+    "node_modules/@openzeppelin/contracts/utils/Strings.sol": {
+      "lastModificationDate": 1684599004203,
+      "contentHash": "396031251978f8febfd90cb62cb240ec",
+      "sourceName": "node_modules/@openzeppelin/contracts/utils/Strings.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "node_modules/@openzeppelin/contracts/utils/math/Math.sol"
+      ],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "Strings": {
+          "0.8.19+commit.7dd6d404.Darwin.appleclang": "Strings.sol/Strings.json"
+        }
+      }
+    },
+    "node_modules/@openzeppelin/contracts/utils/math/Math.sol": {
+      "lastModificationDate": 1684599004201,
+      "contentHash": "b9c58920ce74d6dc819161786112e7ee",
+      "sourceName": "node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "Math": {
+          "0.8.19+commit.7dd6d404.Darwin.appleclang": "Math.sol/Math.json"
         }
       }
     }

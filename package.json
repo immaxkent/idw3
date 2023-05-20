@@ -4,12 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "dev:client": "cd client && npm run dev",
+    "start:client": "cd client && npm run start"
   },
   "author": "XaEk",
   "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
     "hardhat": "^2.14.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.3",
+    "@openzeppelin/contracts-upgradeable": "^4.8.3"
   }
 }

@@ -51,20 +51,22 @@ export default async function handler(
 
       case "PATCH":
         const userToPatch = request.body;
-        const patchFilter = { email: userToPatch.email };
+        console.log("patching with user", request.body);
 
-        if (!userToUpdate.sismoId) {
+        const patchFilter = { sismoId: userToPatch.sismoId };
+
+        if (!userToPatch.sismoId) {
           return response.status(400).send("No sismo ID sent in request");
         }
 
         // create a document that sets the plot of the movie
         const patchUpdateDoc = {
-          $set: {
-            userToPatch,
-          },
+          ...userToPatch,
         };
 
-        await accounts.updateOne(patchFilter, patchUpdateDoc, { upsert: true });
+        await accounts.replaceOne(patchFilter, patchUpdateDoc, {
+          upsert: true,
+        });
         return response.status(200).json({ user: userToUpdate, success: true });
     }
   } catch (error) {

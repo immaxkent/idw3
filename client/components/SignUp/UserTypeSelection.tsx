@@ -14,34 +14,28 @@ const Spacer = styled.div`
   width: 16px;
 `;
 
-const UserTypeSelection = ({
-  sismoId,
-  setUserType,
-}: {
-  sismoId: string;
-  setUserType: (type: string) => void;
-}) => {
+const UserTypeSelection = () => {
   const router = useRouter();
   const { pathname, query } = router;
 
   const handleSelection = async (userType: string) => {
     await fetch("api/mongo", {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        sismoId,
+        sismoId: query.sismoId,
         userType,
       }),
     });
-    setUserType(userType);
 
     router.push({
       pathname,
       query: {
         ...query,
         step: "kyc",
+        userType,
       },
     });
   };

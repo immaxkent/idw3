@@ -7,16 +7,13 @@ import KYCSignUp from "./KYCSignUp";
 const SignUp = () => {
   const { query } = useRouter();
 
-  const [sismoId, setSismoId] = useState(null);
-  const [userType, setUserType] = useState(null);
-
   switch (query.step) {
     case "sismo":
-      return <SismoSignUp setSismoId={setSismoId} />;
+      return <SismoSignUp />;
     case "userType":
-      return <UserTypeSelection sismoId={sismoId} setUserType={setUserType} />;
+      return <UserTypeSelection />;
     case "kyc":
-      return <KYCSignUp sismoId={sismoId} userType={userType} />;
+      return <KYCSignUp />;
   }
 };
 

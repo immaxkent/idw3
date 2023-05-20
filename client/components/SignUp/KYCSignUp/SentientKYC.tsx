@@ -1,8 +1,14 @@
 import Container from "../../Atoms/Container";
 import { useState } from "react";
 import { Form, Label, SubmitButton } from "../../Atoms/Form";
+import { useRouter } from "next/router";
 
-const SentientKYC = ({ sismoId }: { sismoId: string }) => {
+const SentientKYC = () => {
+  const router = useRouter();
+  const {
+    query: { sismoId },
+  } = router;
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [passport, setPassport] = useState(null);

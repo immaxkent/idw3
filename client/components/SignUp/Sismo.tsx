@@ -27,7 +27,7 @@ const ButtonContainer = styled.div`
   }
 `;
 
-const SismoSignUp = ({ setSismoId }: { setSismoId: (id: string) => void }) => {
+const SismoSignUp = () => {
   const router = useRouter();
   const { pathname, query } = router;
 
@@ -60,12 +60,13 @@ const SismoSignUp = ({ setSismoId }: { setSismoId: (id: string) => void }) => {
                 sismoId: vaultId,
               }),
             });
-            setSismoId(vaultId);
+
             router.push({
               pathname,
               query: {
                 ...query,
                 step: "userType",
+                sismoId: vaultId,
               },
             });
           }}

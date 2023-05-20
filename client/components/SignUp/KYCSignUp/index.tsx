@@ -1,17 +1,17 @@
 import SentientKYC from "./SentientKYC";
 import ProprietorKYC from "./ProprietorKYC";
+import { useRouter } from "next/router";
 
-const KYCSignUp = ({
-  sismoId,
-  userType,
-}: {
-  sismoId: string;
-  userType: string;
-}) => {
+const KYCSignUp = () => {
+  const router = useRouter();
+  const {
+    query: { userType },
+  } = router;
+
   if (userType === "proprietor") {
-    return <ProprietorKYC sismoId={sismoId} />;
+    return <ProprietorKYC />;
   } else {
-    return <SentientKYC sismoId={sismoId} />;
+    return <SentientKYC />;
   }
 };
 

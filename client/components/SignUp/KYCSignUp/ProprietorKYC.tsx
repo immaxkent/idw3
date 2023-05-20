@@ -1,12 +1,17 @@
 import Container from "../../Atoms/Container";
 import { useState } from "react";
 import { Form, Label, SubmitButton } from "../../Atoms/Form";
+import { useRouter } from "next/router";
 
-const ProprietorKYC = ({ sismoId }: { sismoId: string }) => {
+const ProprietorKYC = () => {
+  const router = useRouter();
+  const {
+    query: { sismoId },
+  } = router;
+
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
   const [vatNumber, setVatNumber] = useState(null);
-  const [railgunWallet, setRailgunWallet] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,7 +19,7 @@ const ProprietorKYC = ({ sismoId }: { sismoId: string }) => {
     try {
       // Call the API with the form data
       const response = await fetch("api/mongo", {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -22,7 +27,6 @@ const ProprietorKYC = ({ sismoId }: { sismoId: string }) => {
           businessName,
           email,
           vatNumber,
-          railgunWallet,
           sismoId,
         }),
       });
@@ -70,16 +74,6 @@ const ProprietorKYC = ({ sismoId }: { sismoId: string }) => {
             type="text"
             value={vatNumber}
             onChange={(e) => setVatNumber(e.target.value)}
-            required
-          />
-        </Label>
-        <br />
-        <Label>
-          Railgun Wallet ID:
-          <input
-            type="text"
-            value={railgunWallet}
-            onChange={(e) => setRailgunWallet(e.target.value)}
             required
           />
         </Label>

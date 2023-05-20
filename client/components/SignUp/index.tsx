@@ -1,6 +1,5 @@
 import SismoSignUp from "./Sismo";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import UserTypeSelection from "./UserTypeSelection";
 import KYCSignUp from "./KYCSignUp";
 import Railgun from "./Railgun";

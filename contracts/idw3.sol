@@ -7,26 +7,36 @@ pragma solidity ^0.8.9;
 contract Idw3 {
 
 string vaultId;
-bool pseudoSwitch; // is this the correct place to implement this?
-string typeOfId;
-uint256[] public superSet;
+bool pseudoSwitch; 
+bool public isSentient;
+// uint256[10] public superSet;
 
+// modifier mustBeProprietor() {
+//     require(isSentient, "This Idw3 is not a Sentient. Only Proprietors can add a SuperSet.");
+//     _;
+// }
 
-constructor(string memory _vaultId, string memory _typeOfId) {
+// modifier mustBeSentient() {
+//     require(!isSentient, "This Idw3 is not a Proprietor. Only Sentients can use Pseudo Identities.");
+//     _;
+// }
+
+constructor(string memory _vaultId, bool _isSentient) {
     vaultId = _vaultId;
-    typeOfId = _typeOfId;
+    isSentient = _isSentient;
     pseudoSwitch = false;
 }
 
-function addSuperSet(uint256[] memory _superSet) public {
-    superSet = _superSet;
-}
+// function addSuperSet(uint256[] memory _superSet) public mustBeProprietor() {
+//     //should take an array of integers and add them to the superSet array
+//     superSet = _superSet;
+// }
 
 function getVaultId() public view returns (string memory) {
     return vaultId;
 }
 
-function modifyPseudoSwitch() public {
+function modifyPseudoSwitch() public payable {
     pseudoSwitch = !pseudoSwitch;
 }
 

@@ -16,6 +16,8 @@ const SignUp = () => {
       return <KYCSignUp />;
     case "railgun":
       return <Railgun />;
+    case "completed":
+      return <div>I'm done baby</div>;
   }
 };
 

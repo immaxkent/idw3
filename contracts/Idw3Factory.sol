@@ -5,13 +5,26 @@ pragma solidity ^0.8.9;
 // import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Idw3.sol";
 import "sismo-connect-solidity/SismoLib.sol";
+import "chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 
-contract Idw3Factory is SismoConnect {
+contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
+    using Chainlink for Chainlink.Request;
     address[] public deployedIdw3s;
     mapping(address => bool) public idw3Owners;
     mapping(address => address) public idw3s;
+    bytes32 private jobId;
+    uint256 private fee;
 
-    constructor(bytes16 appId) SismoConnect(appId) {}
+    event RequestVolume(bytes32 indexed requestId, bool volume);
+
+    constructor(bytes16 appId) SismoConnect(appId) ConfirmedOwner(msg.sender) {
+        setChainlinkToken(0x779877A7B0D9E8603169DdbD7836e478b4624789);
+        setChainlinkOracle(0x6090149792dAAeE9D1D568c9f9a6F6B46AA29eFD);
+        // jobId = "ca98366cc7314957b8c012c72f05aeeb";//uint
+        jobId = "c1c5e92880894eb6b27d3cae19670aa3"; //bool
+        fee = (1 * LINK_DIVISIBILITY) / 10; // 0,1 * 10**18 (Varies by network and job)
+    }
 
     function createIdw3(
         bytes calldata sismoConnectResponse,
@@ -41,6 +54,52 @@ contract Idw3Factory is SismoConnect {
         address newIdw3 = address(new Idw3(vaultId, _typeOfId));
         idw3Owners[msg.sender] = true;
         idw3s[msg.sender] = newIdw3;
+    }
+
+    /**
+     * Create a Chainlink request to retrieve API response, find the target
+     * data, then multiply by 1000000000000000000 (to remove decimal places from data).
+     */
+    function requestVolumeData() public returns (bytes32 requestId) {
+        Chainlink.Request memory req = buildChainlinkRequest(
+            jobId,
+            address(this),
+            this.fulfill.selector
+        );
+
+        // Set the URL to perform the GET request on
+        // req.add("get", "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD");
+        req.add("get", "https://thin-lamps-judge.loca.lt/api/mongo");
+
+        // Set the path to find the desired data in the API response, where the response format is:
+        // {"RAW":
+        //   {"ETH":
+        //    {"USD":
+        //     {
+        //      "VOLUME24HOUR": xxx.xxx,
+        //     }
+        //    }
+        //   }
+        //  }
+        // request.add("path", "RAW.ETH.USD.VOLUME24HOUR"); // Chainlink nodes prior to 1.0.0 support this format
+        req.add("sismoId", "123"); // Chainlink nodes 1.0.0 and later support this format
+
+        // Multiply the result by 1000000000000000000 to remove decimals
+        // int256 timesAmount = 10 ** 18;
+        // req.addInt("times", timesAmount);
+        // console.log("Request sent");
+        // Sends the request
+        return sendChainlinkRequest(req, fee);
+    }
+
+    function fulfill(
+        bytes32 _requestId,
+        bool _volume
+    ) public recordChainlinkFulfillment(_requestId) {
+        emit RequestVolume(_requestId, _volume);
+        // volume = _volume;
+        // console.log("Request received");
+        // console.log(_volume);
     }
 
     function evaluateIfUserHasIdw3() public view returns (bool) {

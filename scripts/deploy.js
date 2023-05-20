@@ -10,7 +10,7 @@ async function main() {
   // Deploy Contract1
   const Idw3 = await ethers.getContractFactory("Idw3");
   console.log("Deploying Idw3...");
-  const idw3 = await Idw3.deploy();
+  const idw3 = await Idw3.deploy(12345, "proprieter");
   await idw3.deployed();
   console.log("Idw3 deployed to:", idw3.address);
 

@@ -16,6 +16,10 @@ constructor(string memory _vaultId, string memory _typeOfId) {
     pseudoSwitch = false;
 }
 
+function getVaultId() public view returns (string memory) {
+    return vaultId;
+}
+
 function modifyPseudoSwitch() public {
     pseudoSwitch = !pseudoSwitch;
 }

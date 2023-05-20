@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Idw3Bridge",
+  "sourceName": "contracts/Idw3Bridge.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220812bdf254a1d3e967761fdf8d9d2768f6ee0d104056d8efa57d00e3d9fbda43864736f6c63430008120033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220812bdf254a1d3e967761fdf8d9d2768f6ee0d104056d8efa57d00e3d9fbda43864736f6c63430008120033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

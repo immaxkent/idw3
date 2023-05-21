@@ -35,6 +35,9 @@ export class InstantiateIDW3Step extends Step {
       this.provider
     );
 
+    console.log("proof", this.proof);
+    console.log("typeOfId", this.typeOfId);
+
     const populatedTransactions: PopulatedTransaction[] = [
       await contract.InstantiateIDW3(this.proof, this.typeOfId),
     ];

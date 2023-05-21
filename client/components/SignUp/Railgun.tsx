@@ -1,21 +1,21 @@
 import Container from "../Atoms/Container";
 import {
-  initialize,
-  getSnarkProver,
-  loadEthereumNetwork,
+	initialize,
+	getSnarkProver,
+	loadEthereumNetwork,
 } from "../../lib/railgunEngine";
 import {
-  createRailgunWallet,
-  gasEstimateForUnprovenCrossContractCalls,
-  generateCrossContractCallsProof,
+	createRailgunWallet,
+	gasEstimateForUnprovenCrossContractCalls,
+	generateCrossContractCallsProof,
 } from "@railgun-community/quickstart";
 import Button from "../Atoms/Button";
 import {
-  NetworkName,
-  serializeUnsignedTransaction,
-  deserializeTransaction,
-  TransactionGasDetailsSerialized,
-  EVMGasType,
+	NetworkName,
+	serializeUnsignedTransaction,
+	deserializeTransaction,
+	TransactionGasDetailsSerialized,
+	EVMGasType,
 } from "@railgun-community/shared-models";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -27,182 +27,212 @@ import { Wallet } from "@ethersproject/wallet";
 import { ethers } from "ethers";
 
 const Railgun = () => {
-  const router = useRouter();
-  const { pathname, query } = router;
-  const { sismoId } = query;
+	const router = useRouter();
+	const { pathname, query } = router;
+	const { sismoId } = query;
 
-  const [railgunWallet, setRailgunWallet] = useState(null);
+	const [railgunWallet, setRailgunWallet] = useState(null);
 
-  initialize();
+	initialize();
 
-  // getSnarkProver();
+	// getSnarkProver();
 
-  const handleCreateWallet = async () => {
-    // Current block numbers for each chain when wallet was first created.
-    // If unknown, provide undefined.
-    const creationBlockNumberMap = {
-      [NetworkName.Ethereum]: 15725700,
-      [NetworkName.Polygon]: 3421400,
-    };
+	const handleCreateWallet = async () => {
+		// Current block numbers for each chain when wallet was first created.
+		// If unknown, provide undefined.
+		const creationBlockNumberMap = {
+			[NetworkName.Ethereum]: 15725700,
+			[NetworkName.Polygon]: 3421400,
+		};
 
-    const railgunWallet = await createRailgunWallet(
-      process.env.NEXT_PUBLIC_RAILGUN_ENCRYPTION_KEY,
-      process.env.NEXT_PUBLIC_RAILGUN_MONIC,
-      creationBlockNumberMap
-    );
+		const railgunWallet = await createRailgunWallet(
+			process.env.NEXT_PUBLIC_RAILGUN_ENCRYPTION_KEY,
+			process.env.NEXT_PUBLIC_RAILGUN_MONIC,
+			creationBlockNumberMap
+		);
 
-    console.log("railgunWallet", railgunWallet.railgunWalletInfo.id);
+		console.log("railgunWallet", railgunWallet.railgunWalletInfo.id);
 
-    await fetch("api/mongo", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sismoId,
-        railgunWalletId: railgunWallet.railgunWalletInfo.id,
-      }),
-    });
+		await fetch("api/mongo", {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				sismoId,
+				railgunWalletId: railgunWallet.railgunWalletInfo.id,
+			}),
+		});
 
-    setRailgunWallet(railgunWallet);
-  };
+		setRailgunWallet(railgunWallet);
+	};
 
-  const sismoConnect = SismoConnect(sismoConnectConfig);
-  const sismoResponse = sismoConnect.getResponse();
-  const proof = sismoResponse.proofs[0].proofData;
+	const sismoConnect = SismoConnect(sismoConnectConfig);
+	const sismoResponse = sismoConnect.getResponse();
+	const proof = sismoResponse.proofs[0].proofData;
 
-  const instantiateIDW3 = async () => {
-    const ethersWallet = Wallet.fromMnemonic(
-      "test test test test test test test test test test test junk"
-    );
+	const instantiateIDW3 = async () => {
+		const ethersWallet = Wallet.fromMnemonic(
+			"test test test test test test test test test test test junk"
+		);
 
-    const fallbackProvider = await loadEthereumNetwork();
-    // console.log("provider out of loadeth", fallbackProvider);
+		const fallbackProvider = await loadEthereumNetwork();
+		// console.log("provider out of loadeth", fallbackProvider);
 
-    const provider = new ethers.providers.JsonRpcProvider(
-      "https://mainnet.infura.io/v3/907216bd3d954504821de1a9df6756fc"
-    );
-    const swap = new InstantiateIDW3(proof, true, provider as any);
+		const provider = new ethers.providers.JsonRpcProvider(
+			"http://localhost:8545"
+		);
+		const swap = new InstantiateIDW3(proof, true, provider as any);
 
-    // Inputs that will be unshielded from private balance.
-    const unshieldERC20Amounts = [];
+		// Inputs that will be unshielded from private balance.
+		const unshieldERC20Amounts = [];
 
-    const recipeInput = {
-      networkName: NetworkName.Ethereum,
-      unshieldERC20Amounts,
-      erc20Amounts: [],
-      nfts: [],
-    };
-    const { populatedTransactions, erc20Amounts } = await swap.getRecipeOutput(
-      recipeInput
-    );
+		const recipeInput = {
+			networkName: NetworkName.Ethereum,
+			unshieldERC20Amounts,
+			erc20Amounts: [],
+			nfts: [],
+		};
+		const { populatedTransactions, erc20Amounts } = await swap.getRecipeOutput(
+			recipeInput
+		);
 
-    // Outputs to re-shield after the Recipe multicall.
-    const shieldERC20Addresses = erc20Amounts.map(
-      ({ tokenAddress }) => tokenAddress
-    );
+		// Outputs to re-shield after the Recipe multicall.
+		const shieldERC20Addresses = erc20Amounts.map(
+			({ tokenAddress }) => tokenAddress
+		);
 
-    // RAILGUN Quickstart will generate a [unshield -> call -> re-shield] transaction enclosing the Recipe multicall.
-    const crossContractCallsSerialized = populatedTransactions.map(
-      serializeUnsignedTransaction
-    );
+		// RAILGUN Quickstart will generate a [unshield -> call -> re-shield] transaction enclosing the Recipe multicall.
+		const crossContractCallsSerialized = populatedTransactions.map(
+			serializeUnsignedTransaction
+		);
 
-    console.log("railgunWallet", railgunWallet);
+		console.log("railgunWallet", railgunWallet);
 
-    const originalGasDetailsSerialized: TransactionGasDetailsSerialized = {
-      evmGasType: EVMGasType.Type2, // Depends on the chain (BNB uses type 0)
-      gasEstimateString: "0x00", // Always 0, we don't have this yet.
-      maxFeePerGasString: "0x100000", // Current gas Max Fee
-      maxPriorityFeePerGasString: "0x010000", // Current gas Max Priority Fee
-    };
+		const originalGasDetailsSerialized: TransactionGasDetailsSerialized = {
+			evmGasType: EVMGasType.Type2, // Depends on the chain (BNB uses type 0)
+			gasEstimateString: "0x00", // Always 0, we don't have this yet.
+			maxFeePerGasString: "0x10000000000",
+			maxPriorityFeePerGasString: "0x100000000",
+		};
 
-    const { gasEstimateString } =
-      await gasEstimateForUnprovenCrossContractCalls(
-        NetworkName.Ethereum,
-        railgunWallet.railgunWalletInfo.id,
-        process.env.NEXT_PUBLIC_RAILGUN_ENCRYPTION_KEY,
-        [],
-        [],
-        [],
-        [],
-        crossContractCallsSerialized,
-        originalGasDetailsSerialized,
-        undefined,
-        true
-      );
-    console.log("gasEstimateString", gasEstimateString);
-    const gasDetailsSerialized: TransactionGasDetailsSerialized = {
-      evmGasType: EVMGasType.Type2, // Depends on the chain (BNB uses type 0)
-      gasEstimateString: gasEstimateString, // Output from gasEstimateForDeposit
-      maxFeePerGasString: "0x100000", // Current gas Max Fee
-      maxPriorityFeePerGasString: "0x010000", // Current gas Max Priority Fee
-      // maxFeePerGasString: "0xfff", // Current gas Max Fee
-      // maxPriorityFeePerGasString: "0xfff", // Current gas Max Priority Fee
-    };
+		const { gasEstimateString, error: gasEstimateError } =
+			await gasEstimateForUnprovenCrossContractCalls(
+				NetworkName.Ethereum,
+				railgunWallet.railgunWalletInfo.id,
+				process.env.NEXT_PUBLIC_RAILGUN_ENCRYPTION_KEY,
+				[],
+				[],
+				[],
+				[],
+				crossContractCallsSerialized,
+				originalGasDetailsSerialized,
+				undefined,
+				true
+			);
+		if (gasEstimateError) {
+			throw new Error(gasEstimateError);
+		}
 
-    const gcccp = await generateCrossContractCallsProof(
-      NetworkName.Ethereum,
-      railgunWallet.railgunWalletInfo.id,
-      process.env.NEXT_PUBLIC_RAILGUN_ENCRYPTION_KEY,
-      [],
-      [],
-      [],
-      [],
-      crossContractCallsSerialized,
-      undefined,
-      true,
-      undefined,
-      () => console.log("I'm doine")
-    );
-    console.log(gcccp, "gcccp");
-    const { error } = gcccp;
+		//       console.log("maxFeePerGas");
+		//     const {maxFeePerGas, maxPriorityFeePerGas} = await provider.getFeeData();
+		// console.log("maxFeePerGas", maxFeePerGas);
+		console.log("gasEstimateString", gasEstimateString);
+		const gasDetailsSerialized: TransactionGasDetailsSerialized = {
+			evmGasType: EVMGasType.Type2, // Depends on the chain (BNB uses type 0)
+			gasEstimateString,
+			// maxFeePerGasString: maxFeePerGas.toHexString(),
+			// maxPriorityFeePerGasString: maxPriorityFeePerGas.toHexString(),
+			maxFeePerGasString: "0x10000000000",
+			maxPriorityFeePerGasString: "0x100000000",
+			// maxFeePerGasString: "0xfff", // Current gas Max Fee
+			// maxPriorityFeePerGasString: "0xfff", // Current gas Max Priority Fee
+		};
 
-    console.log(error, "error");
+		const gcccp = await generateCrossContractCallsProof(
+			NetworkName.Ethereum,
+			railgunWallet.railgunWalletInfo.id,
+			process.env.NEXT_PUBLIC_RAILGUN_ENCRYPTION_KEY,
+			[],
+			[],
+			[],
+			[],
+			crossContractCallsSerialized,
+			undefined,
+			true,
+			0,
+			() => console.log("I'm doine")
+		);
+		console.log(gcccp, "gcccp");
+		const { error } = gcccp;
 
-    const cccs = await populateProvedCrossContractCalls(
-      NetworkName.Ethereum,
-      railgunWallet.railgunWalletInfo.id,
-      unshieldERC20Amounts,
-      [],
-      shieldERC20Addresses,
-      [],
-      crossContractCallsSerialized,
-      undefined,
-      true,
-      undefined,
-      gasDetailsSerialized
-    );
+		console.log(error, "error");
 
-    console.log("cccs", cccs);
+		console.log(
+			NetworkName.Ethereum,
+			railgunWallet.railgunWalletInfo.id,
+			unshieldERC20Amounts,
+			[],
+			shieldERC20Addresses,
+			[],
+			crossContractCallsSerialized,
+			undefined,
+			true,
+			0,
+			gasDetailsSerialized
+		);
 
-    const { serializedTransaction } = cccs;
+		const cccs = await populateProvedCrossContractCalls(
+			NetworkName.Ethereum,
+			railgunWallet.railgunWalletInfo.id,
+			unshieldERC20Amounts,
+			[],
+			shieldERC20Addresses,
+			[],
+			crossContractCallsSerialized,
+			undefined,
+			true,
+			0,
+			gasDetailsSerialized
+		);
 
-    console.log("serializedTransaction", serializedTransaction);
-    // Submit transaction to RPC.
-    const transaction = deserializeTransaction(
-      serializedTransaction,
-      1000000,
-      1
-    );
-    console.log(ethersWallet);
-    const signedTransaction = await ethersWallet.signTransaction(transaction);
-    console.log(ethersWallet.address);
-    console.log("balance", await provider.getBalance(ethersWallet.address));
-    await fallbackProvider.sendTransaction(signedTransaction);
-  };
+		console.log("cccs", cccs);
 
-  return (
-    <Container>
-      {!railgunWallet ? (
-        <>
-          <div>Railgun integration goes here</div>
-          <Button onClick={handleCreateWallet}>Integrate me</Button>
-        </>
-      ) : (
-        <Button onClick={instantiateIDW3}>init IDW3</Button>
-      )}
-    </Container>
-  );
+		const { serializedTransaction } = cccs;
+
+		const nonce = (await ethersWallet.getTransactionCount("pending")) + 1;
+
+		console.log("serializedTransaction", serializedTransaction);
+		// Submit transaction to RPC.
+		const transaction = deserializeTransaction(
+			serializedTransaction,
+			nonce,
+			31337
+		);
+		console.log(ethersWallet);
+		const signedTransaction = await ethersWallet.signTransaction(transaction);
+		console.log(ethersWallet.address);
+		console.log("balance", await provider.getBalance(ethersWallet.address));
+		const txResponse = await fallbackProvider.sendTransaction(
+			signedTransaction
+		);
+		console.log("txResponse", txResponse);
+		const txReceipt = await txResponse.wait();
+		console.log("txReceipt", txReceipt);
+	};
+
+	return (
+		<Container>
+			{!railgunWallet ? (
+				<>
+					<div>Railgun integration goes here</div>
+					<Button onClick={handleCreateWallet}>Integrate me</Button>
+				</>
+			) : (
+				<Button onClick={instantiateIDW3}>init IDW3</Button>
+			)}
+		</Container>
+	);
 };
 
 export default Railgun;

@@ -74,11 +74,11 @@ export const getSnarkProver = () => {
 
 export const loadEthereumNetwork = async () => {
   const ETH_PROVIDERS_JSON: FallbackProviderJsonConfig = {
-    chainId: 1,
+    chainId: 31337,
     providers: [
       {
         provider:
-          "https://mainnet.infura.io/v3/907216bd3d954504821de1a9df6756fc",
+        "http://localhost:8545",
         priority: 1,
         weight: 1,
       },

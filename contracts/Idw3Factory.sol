@@ -50,10 +50,10 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
             // signature: buildSignature({message: abi.encode(msg.sender)})
         });
 
-        // if the proofs and signed message are valid, we can take the userId from the verified result
-        // in this case the userId is the vaultId (since we used AuthType.VAULT in the auth request)
-        // it is the anonymous identifier of a user's vault for a specific app
-        // --> vaultId = hash(userVaultSecret, appId)
+        // // if the proofs and signed message are valid, we can take the userId from the verified result
+        // // in this case the userId is the vaultId (since we used AuthType.VAULT in the auth request)
+        // // it is the anonymous identifier of a user's vault for a specific app
+        // // --> vaultId = hash(userVaultSecret, appId)
         uint256 vaultId = SismoConnectHelper.getUserId(result, AuthType.VAULT);
 
         mintIDW(vaultId, msg.sender, _typeOfId); // Demo

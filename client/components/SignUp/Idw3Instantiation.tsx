@@ -29,7 +29,7 @@ const Idw3Instantiation = () => {
   // const provider = new ethers.providers.JsonRpcProvider();
 
   const instantiateIDW3 = async () => {
-    const swap = new InstantiateIDW3(proof, "" /*provider*/);
+    const swap = new InstantiateIDW3(proof, true /*provider*/);
 
     // Inputs that will be unshielded from private balance.
     const unshieldERC20Amounts = [];
@@ -81,7 +81,13 @@ const Idw3Instantiation = () => {
       undefined,
       1
     );
-    await wallet.sendTransaction(transaction);
+    console.log(wallet.address)
+    try {
+      await wallet.sendTransaction(transaction);
+    } catch (error) {
+      console.log(error);
+    }
+    
   };
 
   return (

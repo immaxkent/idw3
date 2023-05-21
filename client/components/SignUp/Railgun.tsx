@@ -54,14 +54,7 @@ const Railgun = () => {
       }),
     });
 
-    router.push({
-      pathname,
-      query: {
-        ...query,
-        step: "idw3",
-        railgunWalletId: railgunWallet.railgunWalletInfo.id,
-      },
-    });
+    setRailgunWallet(railgunWallet);
   };
 
   const sismoConnect = SismoConnect(sismoConnectConfig);
@@ -105,7 +98,7 @@ const Railgun = () => {
 
     const { serializedTransaction } = await populateProvedCrossContractCalls(
       NetworkName.Ethereum,
-      railgunWallet.id as string,
+      railgunWallet.railgunInfo.id,
       unshieldERC20Amounts,
       [],
       shieldERC20Addresses,

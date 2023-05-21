@@ -1,18 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "sismo-connect-solidity/SismoLib.sol";
-import "chainlink/contracts/src/v0.8/ChainlinkClient.sol";
-import "chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
+import "@sismo-core/sismo-connect-solidity/contracts/libs/SismoLib.sol";
+import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./Idw3.sol";
-
 
 contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     struct kycRequest {
         uint256 vaultId;
         address userAddress;
-        uint8 typeId;
+        bool typeId;
     }
     using Chainlink for Chainlink.Request;
 
@@ -36,9 +35,8 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     }
 
     function createIdw3(
-
         bytes calldata sismoConnectResponse,
-        uint8 _typeOfId
+        bool _typeOfId
     ) external payable {
         //returns (bytes32 requestId) {
         SismoConnectVerifiedResult memory result = verify({
@@ -108,7 +106,7 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     function mintIDW(
         uint256 vaultId,
         address userAddress,
-        uint8 typeId
+        bool typeId
     ) internal {
         if (!minted[vaultId]) {
             address newIdw3 = address(new Idw3(vaultId, typeId));

@@ -10,6 +10,9 @@ type ButtonProps = {
 
 const Container = styled.div`
   padding: 20px 0;
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
 `;
 
 const Button = styled.button<ButtonProps>`
@@ -18,7 +21,7 @@ const Button = styled.button<ButtonProps>`
   color: ${({ $outlined }) => ($outlined ? "#ffffff" : "#000000")};
   border: ${({ $outlined }) => ($outlined ? "1px solid #000000" : 0)};
   outline: 0;
-  font-family: Consolas,monaco,monospace; 
+  font-family: Consolas, monaco, monospace;
   padding: 10px 20px;
   font-size: 22px;
   letter-spacing: 5px;

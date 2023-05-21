@@ -23,8 +23,8 @@ const Container = styled.div`
 `;
 
 const NumberDisc = styled.div<NumberDiscProps>`
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: ${({ $isActive }) => ($isActive ? "#ffffff" : "#dfdfdf")};
   color: #000;

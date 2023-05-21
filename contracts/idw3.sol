@@ -5,42 +5,25 @@ pragma solidity ^0.8.9;
 //import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Idw3 {
+    uint256 public vaultId;
+    bool pseudoSwitch; // is this the correct place to implement this?
+    uint8 typeOfId;
+    uint256[] public superSet;
 
-string vaultId;
-bool pseudoSwitch; 
-bool public isSentient;
-// uint256[10] public superSet;
+    constructor(uint256 _vaultId, uint8 _typeOfId) {
+        vaultId = _vaultId;
+        typeOfId = _typeOfId;
+        pseudoSwitch = false;
+    }
 
-// modifier mustBeProprietor() {
-//     require(isSentient, "This Idw3 is not a Sentient. Only Proprietors can add a SuperSet.");
-//     _;
-// }
+    function addSuperSet(uint256[] memory _superSet) public {
+        superSet = _superSet;
+    }
 
-// modifier mustBeSentient() {
-//     require(!isSentient, "This Idw3 is not a Proprietor. Only Sentients can use Pseudo Identities.");
-//     _;
-// }
+    function modifyPseudoSwitch() public {
+        pseudoSwitch = !pseudoSwitch;
+    }
 
-constructor(string memory _vaultId, bool _isSentient) {
-    vaultId = _vaultId;
-    isSentient = _isSentient;
-    pseudoSwitch = false;
-}
-
-// function addSuperSet(uint256[] memory _superSet) public mustBeProprietor() {
-//     //should take an array of integers and add them to the superSet array
-//     superSet = _superSet;
-// }
-
-function getVaultId() public view returns (string memory) {
-    return vaultId;
-}
-
-function modifyPseudoSwitch() public payable {
-    pseudoSwitch = !pseudoSwitch;
-}
-
-fallback() external payable {}
-receive() external payable {}
-    
+    fallback() external payable {}
+    receive() external payable {}
 }

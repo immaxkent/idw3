@@ -15,8 +15,6 @@ const Railgun = () => {
 
   // getSnarkProver();
 
-  console.log("railgunEngine", railgunEngine);
-
   const handleCreateWallet = async () => {
     // Current block numbers for each chain when wallet was first created.
     // If unknown, provide undefined.
@@ -48,7 +46,7 @@ const Railgun = () => {
       pathname,
       query: {
         ...query,
-        step: "completed",
+        step: "idw3",
       },
     });
   };

@@ -31,7 +31,7 @@ const ContentContainer = styled.div`
 export default function Home({}) {
   const router = useRouter();
   const {
-    query: { step },
+    query: { step, sismoConnectResponseCompressed },
   } = router;
 
   return (
@@ -39,7 +39,11 @@ export default function Home({}) {
       <PageContainer>
         <Header />
         <ContentContainer>
-          {!step ? <LandingContent /> : <SignUp />}
+          {!step && !sismoConnectResponseCompressed ? (
+            <LandingContent />
+          ) : (
+            <SignUp />
+          )}
         </ContentContainer>
       </PageContainer>
     </RootLayout>

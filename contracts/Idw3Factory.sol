@@ -6,7 +6,6 @@ pragma solidity ^0.8.9;
 import "./Idw3.sol";
 
 contract Idw3Factory {
-
     address[] public deployedIdw3s;
     mapping(address => bool) public idw3Owners;
     mapping(address => address) public idw3s;
@@ -16,19 +15,20 @@ contract Idw3Factory {
         _;
     }
 
-    function createIdw3(string memory _vaultId, string memory _typeOfId) public payable hasPassedKyc(keccak256(abi.encodePacked(msg.sender))) {
-        address newIdw3 = address(new Idw3(_vaultId, _typeOfId));
+    function createIdw3(
+        string memory _vaultId,
+        bool _isSentient
+    ) public payable hasPassedKyc(keccak256(abi.encodePacked(msg.sender))) {
+        address newIdw3 = address(new Idw3(_vaultId, _isSentient));
         idw3Owners[msg.sender] = true;
         idw3s[msg.sender] = newIdw3;
     }
 
-    function evaluateIfUserHasIdw3() public view returns(bool) {
+    function evaluateIfUserHasIdw3() public view returns (bool) {
         if (idw3Owners[msg.sender] == true) {
             return true;
         } else {
             return false;
-
+        }
     }
-    }
-
 }

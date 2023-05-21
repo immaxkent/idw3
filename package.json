@@ -17,6 +17,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.3",
     "@openzeppelin/contracts-upgradeable": "^4.8.3",
+    "@railgun-community/cookbook": "^1.1.2",
     "@railgun-community/quickstart": "^4.4.3",
     "@railgun-community/shared-models": "^4.2.2",
     "@sismo-core/sismo-connect-react": "^0.0.13",

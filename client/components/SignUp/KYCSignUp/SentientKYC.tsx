@@ -75,7 +75,7 @@ const SentientKYC = () => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
+            // required
           />
         </Label>
         <br />
@@ -85,7 +85,7 @@ const SentientKYC = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
+            // required
           />
         </Label>
         <br />

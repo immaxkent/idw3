@@ -73,7 +73,7 @@ const SismoSignUp = () => {
           onResponseBytes={async (bytes: string) => {
             //Send the response to your contract to verify it
             //thanks to the @sismo-core/sismo-connect-solidity package
-            // console.log("received sismo response bytes", bytes);
+            console.log("received sismo response bytes", bytes);
           }}
         />
       </ButtonContainer>

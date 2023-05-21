@@ -9,7 +9,7 @@ const SignUp = () => {
   const { query } = useRouter();
 
   switch (query.step) {
-    case "sismo":
+    case undefined:
       return <SismoSignUp />;
     case "userType":
       return <UserTypeSelection />;

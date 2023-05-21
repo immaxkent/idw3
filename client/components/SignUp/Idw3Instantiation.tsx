@@ -5,21 +5,22 @@ import { SismoConnect } from "@sismo-core/sismo-connect-client";
 import { sismoConnectConfig } from "./Sismo";
 import { useRouter } from "next/router";
 
-import { ethers } from "ethers";
 import {
   NetworkName,
   serializeUnsignedTransaction,
   deserializeTransaction,
+  TransactionGasDetailsSerialized,
+  EVMGasType,
 } from "@railgun-community/shared-models";
-import {
-  gasEstimateForUnprovenCrossContractCalls,
-  generateCrossContractCallsProof,
-  populateProvedCrossContractCalls,
-} from "@railgun-community/quickstart";
+import { populateProvedCrossContractCalls } from "@railgun-community/quickstart";
+import Button from "../Atoms/Button";
 
 const Idw3Instantiation = () => {
   const router = useRouter();
-  const { pathname, query } = router;
+  const {
+    pathname,
+    query: { railgunWalletId },
+  } = router;
 
   const sismoConnect = SismoConnect(sismoConnectConfig);
   const sismoResponse = sismoConnect.getResponse();
@@ -53,35 +54,41 @@ const Idw3Instantiation = () => {
       serializeUnsignedTransaction
     );
 
-    // const { gasEstimateString } =
-    //   await gasEstimateForUnprovenCrossContractCalls(
-    //     "",
-    //     unshieldERC20Amounts,
-    //     "",
-    //     shieldERC20Addresses,
+    const gasDetailsSerialized: TransactionGasDetailsSerialized = {
+      evmGasType: EVMGasType.Type2, // Depends on the chain (BNB uses type 0)
+      gasEstimateString: "0x0100", // Output from gasEstimateForDeposit
+      maxFeePerGasString: "0x100000", // Current gas Max Fee
+      maxPriorityFeePerGasString: "0x010000", // Current gas Max Priority Fee
+    };
 
-    //     crossContractCallsSerialized
-    //   );
-
-    // await generateCrossContractCallsProof(
-    //   unshieldERC20Amounts,
-    //   shieldERC20Addresses,
-    //   crossContractCallsSerialized
-    // );
     const { serializedTransaction } = await populateProvedCrossContractCalls(
       NetworkName.Ethereum,
-
+      railgunWalletId as string,
       unshieldERC20Amounts,
+      [],
       shieldERC20Addresses,
-      crossContractCallsSerialized
+      [],
+      crossContractCallsSerialized,
+      undefined,
+      true,
+      undefined,
+      gasDetailsSerialized
     );
 
     // Submit transaction to RPC.
-    const transaction = deserializeTransaction(serializedTransaction);
+    const transaction = deserializeTransaction(
+      serializedTransaction,
+      undefined,
+      1
+    );
     await wallet.sendTransaction(transaction);
   };
 
-  return <Container></Container>;
+  return (
+    <Container>
+      <Button onClick={instantiateIDW3}>init IDW3</Button>
+    </Container>
+  );
 };
 
 export default Idw3Instantiation;

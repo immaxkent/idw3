@@ -6,24 +6,16 @@ import {
   StepActions,
   StepMessage,
 } from "../components";
+import queryString from "query-string";
 
 const Wrapper = styled.div`
+  position: absolute;
+  top: 24px;
+  right: 24px;
   display: flex;
-  width: 100%;
-  height: 100%;
+  width: 350px;
+  height: 350px;
   background: #454947;
-  padding: 40px 80px;
-`;
-
-const Grid = styled.div`
-  width: 100%;
-  display: grid;
-  grid-gap: 20px;
-  grid-template-columns: repeat(3, 1fr);
-`;
-
-const Aside = styled.aside`
-  grid-column: span 1 / span 1;
 `;
 
 const Main = styled.main`
@@ -31,6 +23,7 @@ const Main = styled.main`
   grid-column: span 2 / span 2;
   border-radius: 10px;
   padding: 20px;
+  width: 100%;
 `;
 
 const Body = styled.div`
@@ -40,9 +33,25 @@ const Body = styled.div`
   justify-content: center;
 `;
 
+const NextButton = styled.button`
+  display: flex;
+  background: "ECECEC";
+  color: "#ffffff" : "#000000";
+  border: "1px solid #000000";
+  outline: 0;
+  font-family: Consolas, monaco, monospace;
+  padding: 10px 20px;
+  font-size: 22px;
+  letter-spacing: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+
 export const Plugin = () => {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  const { openIdw3 } = queryString.parse(window.location.search);
 
   const steps = [
     "SWAP QUOTATION",
@@ -55,25 +64,23 @@ export const Plugin = () => {
     setStep(step);
   };
 
-  return (
+  return !openIdw3 ? null : (
     <Wrapper>
-      <Grid>
-        <Aside>Logo here</Aside>
-        <Main>
-          <StepNumbers step={step} steps={steps} onChange={handleStepChange} />
-          <Body>
-            {loading ? (
-              <>loading spinner</>
-            ) : (
+      <Main>
+        <StepNumbers step={step} steps={steps} onChange={handleStepChange} />
+        <Body>
+          <>
+            <StepDescription title={steps[step]} />
+            {step > 0 ? null : (
               <>
-                <StepDescription title={steps[step]} />
                 <StepMessage step={step} />
                 <StepActions step={step} />
               </>
             )}
-          </Body>
-        </Main>
-      </Grid>
+            <NextButton onClick={() => setStep(step + 1)}>Next</NextButton>
+          </>
+        </Body>
+      </Main>
     </Wrapper>
   );
 };

@@ -39,7 +39,9 @@ export default function Home() {
       <BackImage src="amazonPage.jpg" height="100vh" width="100vw" />
       <Button
         onClick={() =>
-          window.location.assign(`${window.location.href}?openIdw3=true`)
+          window.location.assign(
+            `${window.location.href}?openIdw3=true&price="$14.99"`
+          )
         }
       >
         <div>IDW3 pay -&gt; </div>

@@ -15,12 +15,15 @@
     "hardhat": "^2.14.0"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.6.1",
+    "@chainlink/hardhat-chainlink": "^0.0.2",
     "@openzeppelin/contracts": "^4.8.3",
     "@openzeppelin/contracts-upgradeable": "^4.8.3",
     "@railgun-community/cookbook": "^1.1.2",
     "@railgun-community/quickstart": "^4.4.3",
     "@railgun-community/shared-models": "^4.2.2",
     "@sismo-core/sismo-connect-react": "^0.0.13",
+    "@sismo-core/sismo-connect-solidity": "^0.0.7",
     "level-js": "^6.1.0",
     "localforage": "^1.10.0"
   }

@@ -1,6 +1,7 @@
 import {
   FallbackProviderJsonConfig,
   NetworkName,
+  createFallbackProviderFromJsonConfig,
 } from "@railgun-community/shared-models";
 import {
   startRailgunEngine,
@@ -77,7 +78,7 @@ export const loadEthereumNetwork = async () => {
     providers: [
       {
         provider:
-          "https://sepolia.infura.io/v3/907216bd3d954504821de1a9df6756fc",
+          "https://mainnet.infura.io/v3/907216bd3d954504821de1a9df6756fc",
         priority: 1,
         weight: 1,
       },
@@ -93,7 +94,11 @@ export const loadEthereumNetwork = async () => {
     shouldDebug
   );
 
-  return feesSerialized;
+  // return feesSerialized;
+
+  const fallbackProvider =
+    createFallbackProviderFromJsonConfig(ETH_PROVIDERS_JSON);
+  return fallbackProvider;
 };
 
 const logMessage = console.log;

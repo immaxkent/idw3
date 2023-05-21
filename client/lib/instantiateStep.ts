@@ -8,6 +8,7 @@ import {
 import { Step } from "@railgun-community/cookbook";
 import { PopulatedTransaction } from "@ethersproject/contracts";
 import { Idw3FactoryContract } from "./IDW3Contract";
+import { BaseProvider } from "@ethersproject/providers";
 
 export class InstantiateIDW3Step extends Step {
   readonly config: StepConfig = {
@@ -17,17 +18,23 @@ export class InstantiateIDW3Step extends Step {
 
   private readonly proof: string;
   private readonly typeOfId: boolean;
+  private readonly provider: BaseProvider;
 
-  constructor(proof: string, typeOfId: boolean) {
+  constructor(proof: string, typeOfId: boolean, provider: BaseProvider) {
     super();
     this.proof = proof;
     this.typeOfId = typeOfId;
+    this.provider = provider;
   }
 
   protected async getStepOutput(
     input: StepInput
   ): Promise<UnvalidatedStepOutput> {
-    const contract = new Idw3FactoryContract(""); // TODO: add address
+    const contract = new Idw3FactoryContract(
+      "0x5E5713a0d915701F464DEbb66015adD62B2e6AE9",
+      this.provider
+    );
+
     const populatedTransactions: PopulatedTransaction[] = [
       await contract.InstantiateIDW3(this.proof, this.typeOfId),
     ];

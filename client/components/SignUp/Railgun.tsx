@@ -1,6 +1,14 @@
 import Container from "../Atoms/Container";
-import { initialize, getSnarkProver } from "../../lib/railgunEngine";
-import { createRailgunWallet } from "@railgun-community/quickstart";
+import {
+  initialize,
+  getSnarkProver,
+  loadEthereumNetwork,
+} from "../../lib/railgunEngine";
+import {
+  createRailgunWallet,
+  gasEstimateForUnprovenCrossContractCalls,
+  generateCrossContractCallsProof,
+} from "@railgun-community/quickstart";
 import Button from "../Atoms/Button";
 import {
   NetworkName,
@@ -15,6 +23,8 @@ import { SismoConnect } from "@sismo-core/sismo-connect-client";
 import { sismoConnectConfig } from "./Sismo";
 import { InstantiateIDW3 } from "../../lib/instantiateIDW3";
 import { populateProvedCrossContractCalls } from "@railgun-community/quickstart";
+import { Wallet } from "@ethersproject/wallet";
+import { ethers } from "ethers";
 
 const Railgun = () => {
   const router = useRouter();
@@ -61,10 +71,18 @@ const Railgun = () => {
   const sismoResponse = sismoConnect.getResponse();
   const proof = sismoResponse.proofs[0].proofData;
 
-  // const provider = new ethers.providers.JsonRpcProvider();
-
   const instantiateIDW3 = async () => {
-    const swap = new InstantiateIDW3(proof, "" /*provider*/);
+    const ethersWallet = Wallet.fromMnemonic(
+      "test test test test test test test test test test test junk"
+    );
+
+    const fallbackProvider = await loadEthereumNetwork();
+    // console.log("provider out of loadeth", fallbackProvider);
+
+    const provider = new ethers.providers.JsonRpcProvider(
+      "https://mainnet.infura.io/v3/907216bd3d954504821de1a9df6756fc"
+    );
+    const swap = new InstantiateIDW3(proof, true, provider as any);
 
     // Inputs that will be unshielded from private balance.
     const unshieldERC20Amounts = [];
@@ -89,16 +107,61 @@ const Railgun = () => {
       serializeUnsignedTransaction
     );
 
-    const gasDetailsSerialized: TransactionGasDetailsSerialized = {
+    console.log("railgunWallet", railgunWallet);
+
+    const originalGasDetailsSerialized: TransactionGasDetailsSerialized = {
       evmGasType: EVMGasType.Type2, // Depends on the chain (BNB uses type 0)
-      gasEstimateString: "0x0100", // Output from gasEstimateForDeposit
+      gasEstimateString: "0x00", // Always 0, we don't have this yet.
       maxFeePerGasString: "0x100000", // Current gas Max Fee
       maxPriorityFeePerGasString: "0x010000", // Current gas Max Priority Fee
     };
 
-    const { serializedTransaction } = await populateProvedCrossContractCalls(
+    const { gasEstimateString } =
+      await gasEstimateForUnprovenCrossContractCalls(
+        NetworkName.Ethereum,
+        railgunWallet.railgunWalletInfo.id,
+        process.env.NEXT_PUBLIC_RAILGUN_ENCRYPTION_KEY,
+        [],
+        [],
+        [],
+        [],
+        crossContractCallsSerialized,
+        originalGasDetailsSerialized,
+        undefined,
+        true
+      );
+    console.log("gasEstimateString", gasEstimateString);
+    const gasDetailsSerialized: TransactionGasDetailsSerialized = {
+      evmGasType: EVMGasType.Type2, // Depends on the chain (BNB uses type 0)
+      gasEstimateString: gasEstimateString, // Output from gasEstimateForDeposit
+      maxFeePerGasString: "0x100000", // Current gas Max Fee
+      maxPriorityFeePerGasString: "0x010000", // Current gas Max Priority Fee
+      // maxFeePerGasString: "0xfff", // Current gas Max Fee
+      // maxPriorityFeePerGasString: "0xfff", // Current gas Max Priority Fee
+    };
+
+    const gcccp = await generateCrossContractCallsProof(
       NetworkName.Ethereum,
-      railgunWallet.railgunInfo.id,
+      railgunWallet.railgunWalletInfo.id,
+      process.env.NEXT_PUBLIC_RAILGUN_ENCRYPTION_KEY,
+      [],
+      [],
+      [],
+      [],
+      crossContractCallsSerialized,
+      undefined,
+      true,
+      undefined,
+      () => console.log("I'm doine")
+    );
+    console.log(gcccp, "gcccp");
+    const { error } = gcccp;
+
+    console.log(error, "error");
+
+    const cccs = await populateProvedCrossContractCalls(
+      NetworkName.Ethereum,
+      railgunWallet.railgunWalletInfo.id,
       unshieldERC20Amounts,
       [],
       shieldERC20Addresses,
@@ -110,13 +173,22 @@ const Railgun = () => {
       gasDetailsSerialized
     );
 
+    console.log("cccs", cccs);
+
+    const { serializedTransaction } = cccs;
+
+    console.log("serializedTransaction", serializedTransaction);
     // Submit transaction to RPC.
     const transaction = deserializeTransaction(
       serializedTransaction,
-      undefined,
+      1000000,
       1
     );
-    await railgunWallet.sendTransaction(transaction);
+    console.log(ethersWallet);
+    const signedTransaction = await ethersWallet.signTransaction(transaction);
+    console.log(ethersWallet.address);
+    console.log("balance", await provider.getBalance(ethersWallet.address));
+    await fallbackProvider.sendTransaction(signedTransaction);
   };
 
   return (

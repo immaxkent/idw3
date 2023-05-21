@@ -1,8 +1,9 @@
 import SismoSignUp from "./Sismo";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import UserTypeSelection from "./UserTypeSelection";
 import KYCSignUp from "./KYCSignUp";
+import Railgun from "./Railgun";
+import Idw3Instantiation from "./Idw3Instantiation";
 
 const SignUp = () => {
   const { query } = useRouter();
@@ -14,6 +15,12 @@ const SignUp = () => {
       return <UserTypeSelection />;
     case "kyc":
       return <KYCSignUp />;
+    case "railgun":
+      return <Railgun />;
+    case "idw3":
+      return <Idw3Instantiation />;
+    case "completed":
+      return <div>I'm done baby</div>;
   }
 };
 

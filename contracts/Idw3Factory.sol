@@ -7,6 +7,7 @@ import "chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./Idw3.sol";
 
+
 contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     struct kycRequest {
         uint256 vaultId;
@@ -14,6 +15,7 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
         uint8 typeId;
     }
     using Chainlink for Chainlink.Request;
+
     address[] public deployedIdw3s;
     mapping(address => bool) public idw3Owners;
     mapping(address => address) public idw3s;
@@ -34,6 +36,7 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
     }
 
     function createIdw3(
+
         bytes calldata sismoConnectResponse,
         uint8 _typeOfId
     ) external payable {
@@ -115,7 +118,7 @@ contract Idw3Factory is SismoConnect, ChainlinkClient, ConfirmedOwner {
         }
     }
 
-    function evaluateIfUserHasIdw3() external view returns (bool) {
+    function evaluateIfUserHasIdw3() public view returns (bool) {
         if (idw3Owners[msg.sender] == true) {
             return true;
         } else {

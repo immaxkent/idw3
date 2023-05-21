@@ -200,13 +200,13 @@ const Railgun = () => {
 
 		const { serializedTransaction } = cccs;
 
-		const nonce = (await ethersWallet.getTransactionCount("pending")) + 1;
+		// const nonce = (await ethersWallet.getTransactionCount("pending")) + 1;
 
 		console.log("serializedTransaction", serializedTransaction);
 		// Submit transaction to RPC.
 		const transaction = deserializeTransaction(
 			serializedTransaction,
-			nonce,
+			469,
 			31337
 		);
 		console.log(ethersWallet);
@@ -230,6 +230,7 @@ const Railgun = () => {
 				</>
 			) : (
 				<Button onClick={instantiateIDW3}>init IDW3</Button>
+        
 			)}
 		</Container>
 	);
